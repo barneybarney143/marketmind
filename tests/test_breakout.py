@@ -31,4 +31,3 @@ def test_breakout_sma_exit() -> None:
     signals = [strategy.next_bar(row) for _, row in data.iterrows()]
 
     assert signals[-1] == "SELL"
-

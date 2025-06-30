@@ -24,9 +24,7 @@ class Backtester:
         self.strategy.reset()
         results = []
         peak = self.equity
-        prev_close: Dict[str, float | None] = {
-            col: None for col in self.data.columns
-        }
+        prev_close: Dict[str, float | None] = {col: None for col in self.data.columns}
         for date, row in self.data.iterrows():
             ts = pd.Timestamp(str(date))
 

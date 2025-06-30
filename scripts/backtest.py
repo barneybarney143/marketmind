@@ -7,7 +7,7 @@ import json
 import sys
 from importlib import import_module
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -39,7 +39,7 @@ def generate_param_grid(params: dict[str, Any]) -> list[dict[str, Any]]:
 
 def load_strategy(name: str, params: dict[str, float]) -> Strategy:
     module = import_module(f"strategies.{name}")
-    cls = getattr(module, "Strategy")
+    cls = cast(type[Strategy], getattr(module, "Strategy"))
     return cls(**params)
 
 
@@ -68,9 +68,7 @@ def main() -> None:
     results_dir.mkdir(exist_ok=True)
 
     for strat_name in strategies:
-        param_sets = (
-            generate_param_grid(base_params) if args.sweep else [base_params]
-        )
+        param_sets = generate_param_grid(base_params) if args.sweep else [base_params]
         for params in param_sets:
             strategy = load_strategy(strat_name, params)
             downloader = DataDownloader()
@@ -84,10 +82,7 @@ def main() -> None:
             paramhash = hashlib.md5(
                 json.dumps(params, sort_keys=True).encode()
             ).hexdigest()[:8]
-            out_file = (
-                results_dir
-                / f"{strat_name}_{paramhash}_{args.ticker}.csv"
-            )
+            out_file = results_dir / f"{strat_name}_{paramhash}_{args.ticker}.csv"
             results.to_csv(out_file)
             summary.append((strat_name, paramhash, cagr_value, max_dd))
 
