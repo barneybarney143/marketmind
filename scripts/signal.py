@@ -4,19 +4,20 @@ import argparse
 import signal as _signal
 import sys
 from datetime import datetime, timedelta
-from importlib import import_module
 from pathlib import Path
 
 sys.modules["signal"] = _signal
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from data import DataDownloader  # noqa: E402
+from strategies import STRATEGIES  # noqa: E402
 from strategies.base import Strategy  # noqa: E402
 
 
 def load_strategy(name: str) -> Strategy:
-    module = import_module(f"strategies.{name}")
-    cls = getattr(module, "Strategy")
+    cls = STRATEGIES.get(name)
+    if cls is None:
+        raise ValueError(f"Unknown strategy: {name}")
     return cls()
 
 

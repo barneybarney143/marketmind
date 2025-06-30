@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import pandas as pd
 import pytest
@@ -25,18 +24,6 @@ def test_backtest_main(
 
     monkeypatch.setattr(backtest.DataDownloader, "get_history", fake_get_history)
 
-    class DummyStrategy:
-        def reset(self) -> None:
-            pass
-
-        def next_bar(self, bar: pd.Series[Any]) -> str:  # type: ignore[override]
-            return "HOLD"
-
-    monkeypatch.setattr(
-        backtest,
-        "load_strategy",
-        lambda *args, **kwargs: DummyStrategy(),
-    )
     monkeypatch.chdir(tmp_path)
 
     argv = [
@@ -69,19 +56,6 @@ def test_signal_main(
         return pd.DataFrame({"close": [1, 2, 3, 4, 5]}, index=index)
 
     monkeypatch.setattr(signal.DataDownloader, "get_history", fake_get_history)
-
-    class DummyStrategy:
-        def reset(self) -> None:
-            pass
-
-        def next_bar(self, bar: pd.Series[Any]) -> str:  # type: ignore[override]
-            return "HOLD"
-
-    monkeypatch.setattr(
-        signal,
-        "load_strategy",
-        lambda *args, **kwargs: DummyStrategy(),
-    )
 
     argv = [
         "signal.py",
