@@ -25,3 +25,13 @@ Run the helper scripts by pointing `PYTHONPATH` at the `src` directory:
 PYTHONPATH=./src python scripts/backtest.py ...
 PYTHONPATH=./src python scripts/signal.py ...
 ```
+
+## Streamlit UI
+
+Run the interactive web app locally:
+
+```bash
+# local
+pip install -e .[dev] streamlit plotly
+streamlit run streamlit_app.py
+```
