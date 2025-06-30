@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
-import yfinance as yf  # type: ignore
+import yfinance as yf
 
 
 class DataDownloader:
@@ -35,5 +35,5 @@ class DataDownloader:
         df = df.loc[pd.Timestamp(start) : pd.Timestamp(end)]
         if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.get_level_values(0)
-        df.columns = [str(c).lower() for c in df.columns]
+        df.columns = pd.Index([str(c).lower() for c in df.columns])
         return df

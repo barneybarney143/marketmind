@@ -5,6 +5,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from typing import Any
+
 import pandas as pd
 
 from data import DataDownloader
@@ -22,7 +24,7 @@ def test_downloader_caches(tmp_path: Path) -> None:
 
 
 class DummyStrategy(Strategy):
-    def next_bar(self, bar: pd.Series) -> str:
+    def next_bar(self, bar: pd.Series[Any]) -> str:
         return "HOLD"
 
 

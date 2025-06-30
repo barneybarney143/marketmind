@@ -22,9 +22,7 @@ class BollingerStrategy(BaseStrategy):
 
     def next_bar(self, bar: pd.Series[Any]) -> str:
         if not isinstance(bar.name, pd.Timestamp):
-            raise ValueError(
-                "Bar index must be a pd.Timestamp for Bollinger strategy"
-            )
+            raise ValueError("Bar index must be a pd.Timestamp for Bollinger strategy")
         close = float(bar["close"])
         self._close_history.at[bar.name] = close
 

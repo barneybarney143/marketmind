@@ -13,10 +13,7 @@ from strategies.dual_mom import DualMomentumStrategy  # noqa: E402
 
 def test_dual_mom_signals() -> None:
     index = pd.date_range("2023-01-01", periods=90, freq="D")
-    data = pd.DataFrame({
-        "AAA": range(90),
-        "BBB": range(90, 0, -1)
-    }, index=index)
+    data = pd.DataFrame({"AAA": range(90), "BBB": range(90, 0, -1)}, index=index)
 
     strategy = DualMomentumStrategy(["AAA", "BBB"], lookback_weeks=1)
     signals = [strategy.next_bar(row) for _, row in data.iterrows()]
@@ -27,10 +24,7 @@ def test_dual_mom_signals() -> None:
 
 def test_backtester_multi_asset() -> None:
     index = pd.date_range("2023-01-01", periods=40, freq="D")
-    data = pd.DataFrame({
-        "AAA": range(40),
-        "BBB": range(40, 0, -1)
-    }, index=index)
+    data = pd.DataFrame({"AAA": range(40), "BBB": range(40, 0, -1)}, index=index)
     strategy = DualMomentumStrategy(["AAA", "BBB"], lookback_weeks=1)
     bt = Backtester(strategy, data)
     results = bt.run()

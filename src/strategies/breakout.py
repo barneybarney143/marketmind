@@ -38,9 +38,7 @@ class BreakoutStrategy(BaseStrategy):
             highest_weekly_close = float(lookback_window.max())
 
         sma_200 = self._close_history.rolling(window=200).mean().iloc[-1]
-        sma_200_value: float | None = (
-            float(sma_200) if not pd.isna(sma_200) else None
-        )
+        sma_200_value: float | None = float(sma_200) if not pd.isna(sma_200) else None
 
         signal = "HOLD"
         if self.position == 0:
@@ -62,4 +60,3 @@ class BreakoutStrategy(BaseStrategy):
                 self.position = 0
                 self._highest_close = None
         return signal
-
