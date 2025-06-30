@@ -72,7 +72,7 @@ def run_backtest(
     st.plotly_chart(fig, use_container_width=True)
     metrics_df = pd.DataFrame([metrics])
     metrics_df = metrics_df.style.format(
-        {'CAGR': '{:.2%}', 'Max DD': '{:.2%}', 'Sharpe': '{:.2f}'}
+        {"CAGR": "{:.2%}", "Max DD": "{:.2%}", "Sharpe": "{:.2f}"}
     )
     st.table(metrics_df)
 
@@ -101,6 +101,7 @@ def latest_signal(
         f"padding:0.2em;text-align:center'>{signal}</div>"
     )
     st.markdown(badge, unsafe_allow_html=True)
+
 
 def main() -> None:
     strat_names = [n for n in strategies.__all__ if n != "STRATEGIES"]
