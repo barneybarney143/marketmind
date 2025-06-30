@@ -205,3 +205,15 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# Project specific ignores
+.venv
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+*.csv
+*.parquet
+plots/
+data/
+results/
+grid_results/
