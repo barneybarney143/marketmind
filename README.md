@@ -26,6 +26,29 @@ PYTHONPATH=./src python scripts/backtest.py ...
 PYTHONPATH=./src python scripts/signal.py ...
 ```
 
+For example, run a simple back-test of the RSI strategy on AAPL:
+
+```bash
+PYTHONPATH=./src python scripts/backtest.py \
+  --strategy rsi --ticker AAPL --start 2020-01-01 --end 2021-01-01 \
+  --params '{"rsi_buy": 30, "rsi_sell": 70}'
+```
+
+To sweep parameter combinations, pass lists in `--params` and add `--sweep`:
+
+```bash
+PYTHONPATH=./src python scripts/backtest.py \
+  --strategy rsi --ticker AAPL --start 2020-01-01 --end 2021-01-01 \
+  --params '{"rsi_buy": [20, 30], "rsi_sell": [70, 80]}' --sweep
+```
+
+You can print the most recent signal for a ticker with:
+
+```bash
+PYTHONPATH=./src python scripts/signal.py \
+  --strategy rsi --ticker AAPL --lookback 365
+```
+
 ## Streamlit UI
 
 Run the interactive web app locally:
