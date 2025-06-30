@@ -1,6 +1,7 @@
 # MarketMind
 
 This repository is a template for a modern Python project. It includes linting with [Ruff](https://docs.astral.sh/ruff/), type checking with [mypy](https://mypy-lang.org/), and testing with [pytest](https://docs.pytest.org/).
+Code is formatted with [Black](https://black.readthedocs.io/) and these checks run automatically via [pre-commit](https://pre-commit.com/).
 
 Use this setup as a starting point for new projects that require a light-weight but strict development workflow.
 
@@ -10,6 +11,12 @@ Install the dependencies first:
 
 ```bash
 pip install -r requirements-dev.txt
+```
+
+Set up the pre-commit hooks after installing the requirements:
+
+```bash
+pre-commit install
 ```
 
 Run the helper scripts by pointing `PYTHONPATH` at the `src` directory:
