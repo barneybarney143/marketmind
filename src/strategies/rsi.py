@@ -58,3 +58,6 @@ class RSIStrategy(BaseStrategy):
         if rsi_value >= self.rsi_sell:
             return "SELL"
         return "HOLD"
+
+
+Strategy = RSIStrategy

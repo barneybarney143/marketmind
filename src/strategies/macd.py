@@ -46,3 +46,6 @@ class MACDStrategy(BaseStrategy):
         if prev_macd >= prev_signal and curr_macd < curr_signal:
             return "SELL"
         return "HOLD"
+
+
+Strategy = MACDStrategy

@@ -43,3 +43,6 @@ class BollingerStrategy(BaseStrategy):
         if last_close >= float(mid):
             return "SELL"
         return "HOLD"
+
+
+Strategy = BollingerStrategy

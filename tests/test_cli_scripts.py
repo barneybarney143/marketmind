@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import pandas as pd
 import pytest
@@ -12,6 +11,7 @@ sys.path.insert(0, str(project_root / "src"))
 sys.path.insert(0, str(project_root))
 
 from scripts import backtest, signal  # noqa: E402
+from strategies.rsi import RSIStrategy  # noqa: E402
 
 
 def test_backtest_main(
@@ -24,19 +24,6 @@ def test_backtest_main(
         return pd.DataFrame({"close": [1.0, 1.1, 1.2]}, index=index)
 
     monkeypatch.setattr(backtest.DataDownloader, "get_history", fake_get_history)
-
-    class DummyStrategy:
-        def reset(self) -> None:
-            pass
-
-        def next_bar(self, bar: pd.Series[Any]) -> str:  # type: ignore[override]
-            return "HOLD"
-
-    monkeypatch.setattr(
-        backtest,
-        "load_strategy",
-        lambda *args, **kwargs: DummyStrategy(),
-    )
     monkeypatch.chdir(tmp_path)
 
     argv = [
@@ -70,19 +57,6 @@ def test_signal_main(
 
     monkeypatch.setattr(signal.DataDownloader, "get_history", fake_get_history)
 
-    class DummyStrategy:
-        def reset(self) -> None:
-            pass
-
-        def next_bar(self, bar: pd.Series[Any]) -> str:  # type: ignore[override]
-            return "HOLD"
-
-    monkeypatch.setattr(
-        signal,
-        "load_strategy",
-        lambda *args, **kwargs: DummyStrategy(),
-    )
-
     argv = [
         "signal.py",
         "--strategy",
@@ -97,4 +71,11 @@ def test_signal_main(
     signal.main()
     out = capsys.readouterr().out.strip()
     assert out in {"BUY", "SELL", "HOLD"}
+
+
+def test_load_strategy_instantiation() -> None:
+    b_strategy = backtest.load_strategy("rsi", {})
+    s_strategy = signal.load_strategy("rsi")
+    assert isinstance(b_strategy, RSIStrategy)
+    assert isinstance(s_strategy, RSIStrategy)
 

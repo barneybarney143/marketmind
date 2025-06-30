@@ -60,3 +60,6 @@ class BreakoutStrategy(BaseStrategy):
                 self.position = 0
                 self._highest_close = None
         return signal
+
+
+Strategy = BreakoutStrategy

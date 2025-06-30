@@ -31,3 +31,6 @@ class IBSStrategy(BaseStrategy):
         if ibs >= self.sell_thr:
             return "SELL"
         return "HOLD"
+
+
+Strategy = IBSStrategy

@@ -66,3 +66,6 @@ class DualMomentumStrategy(BaseStrategy):
                 signal = f"BUY:{new_symbol}"
                 self._current_symbol = new_symbol
         return signal
+
+
+Strategy = DualMomentumStrategy
