@@ -1,3 +1,7 @@
 ruff
 pytest
+pandas
+yfinance
 mypy
+pandas-stubs
+pyarrow
