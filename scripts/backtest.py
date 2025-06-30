@@ -5,7 +5,6 @@ import hashlib
 import itertools
 import json
 import sys
-from importlib import import_module
 from pathlib import Path
 from typing import Any, cast
 
@@ -38,9 +37,10 @@ def generate_param_grid(params: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def load_strategy(name: str, params: dict[str, float]) -> Strategy:
-    module = import_module(f"strategies.{name}")
-    cls = cast(type[Strategy], getattr(module, "Strategy"))
-    return cls(**params)
+    cls = STRATEGIES.get(name)
+    if cls is None:
+        raise ValueError(f"Unknown strategy: {name}")
+    return cast(type[Strategy], cls)(**params)
 
 
 def main() -> None:
