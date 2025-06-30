@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .bollinger import BollingerStrategy
 from .breakout import BreakoutStrategy
 from .dual_mom import DualMomentumStrategy
 from .ibs import IBSStrategy
@@ -11,6 +12,7 @@ STRATEGIES = {
     "dual_mom": DualMomentumStrategy,
     "ibs": IBSStrategy,
     "macd": MACDStrategy,
+    "boll": BollingerStrategy,
     "rsi": RSIStrategy,
 }
 
@@ -19,6 +21,7 @@ __all__ = [
     "DualMomentumStrategy",
     "IBSStrategy",
     "MACDStrategy",
+    "BollingerStrategy",
     "RSIStrategy",
     "STRATEGIES",
 ]
