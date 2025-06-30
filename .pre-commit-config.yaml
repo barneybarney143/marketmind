@@ -19,3 +19,10 @@ repos:
         entry: pytest -q
         language: system
         pass_filenames: false
+  - repo: local
+    hooks:
+      - id: poetry-install
+        name: Poetry Install
+        entry: poetry install --with dev --no-interaction --no-root
+        language: system
+        pass_filenames: false

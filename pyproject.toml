@@ -2,11 +2,54 @@
 requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
-[project]
+[tool.poetry]
 name = "marketmind"
 version = "0.1.0"
 description = "Modern Python project template"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+streamlit = "*"
+plotly = "*"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "*"
+pytest = "*"
+pandas = "*"
+yfinance = "*"
+mypy = "*"
+pandas-stubs = "*"
+pyarrow = "*"
+coverage = "*"
+pytest-cov = "*"
+black = "*"
+pre-commit = "*"
+
+[project]
+name = "marketmind"
+description = "Modern Python project template"
 requires-python = ">=3.11"
+dynamic = ["version"]
+dependencies = [
+    "streamlit",
+    "plotly",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "pytest",
+    "pandas",
+    "yfinance",
+    "mypy",
+    "pandas-stubs",
+    "pyarrow",
+    "coverage",
+    "pytest-cov",
+    "black",
+    "pre-commit",
+]
 
 [tool.ruff]
 target-version = "py311"

@@ -1,2 +1,1 @@
-streamlit
-plotly
+# 🔒 AUTO-GENERATED — Do not edit manually. Run "make export".

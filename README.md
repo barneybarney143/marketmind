@@ -7,16 +7,18 @@ Use this setup as a starting point for new projects that require a light-weight 
 
 ## Running the Scripts
 
-Install the dependencies first:
+## Setup
 
 ```bash
-pip install -r requirements-dev.txt
+pip install poetry
+poetry install --with dev
+pre-commit install
 ```
 
-Set up the pre-commit hooks after installing the requirements:
+Exporting requirements for Streamlit
 
 ```bash
-pre-commit install
+make export
 ```
 
 Run the helper scripts by pointing `PYTHONPATH` at the `src` directory:
