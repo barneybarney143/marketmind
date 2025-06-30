@@ -29,7 +29,9 @@ class DataDownloader:
         if cache_file.exists():
             df = pd.read_parquet(cache_file)
         else:
-            df = yf.download(ticker, start=start, end=end, progress=False)
+            df = yf.download(
+                ticker, start=start, end=end, progress=False, auto_adjust=False
+            )
             df.to_parquet(cache_file)
         df.index.name = "date"
         df = df.loc[pd.Timestamp(start) : pd.Timestamp(end)]
