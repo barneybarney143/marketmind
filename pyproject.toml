@@ -27,8 +27,12 @@ mypy_path = "src"
 
 [tool.coverage.run]
 branch = true
-source = ["marketmind"]
+source = ["src"]
 
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
+
+[tool.black]
+target-version = ["py311"]
+line-length = 88

@@ -7,3 +7,5 @@ pandas-stubs
 pyarrow
 coverage
 pytest-cov
+black
+pre-commit
