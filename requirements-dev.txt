@@ -5,3 +5,5 @@ yfinance
 mypy
 pandas-stubs
 pyarrow
+coverage
+pytest-cov

@@ -24,3 +24,11 @@ python_version = "3.11"
 strict = true
 files = ["src"]
 mypy_path = "src"
+
+[tool.coverage.run]
+branch = true
+source = ["marketmind"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
