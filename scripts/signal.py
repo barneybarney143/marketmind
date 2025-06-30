@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import argparse
+import signal as _signal
 import sys
 from datetime import datetime, timedelta
 from importlib import import_module
 from pathlib import Path
 
-from data import DataDownloader
-from strategies.base import Strategy
-
+sys.modules["signal"] = _signal
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from data import DataDownloader  # noqa: E402
+from strategies.base import Strategy  # noqa: E402
 
 
 def load_strategy(name: str) -> Strategy:
