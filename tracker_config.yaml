@@ -1,0 +1,5 @@
+max_prompts_hour: 20
+max_complexity_avg_hour: 0.6
+min_quality: medium
+max_active_hours_day: 8
+complex_threshold: 0.7
