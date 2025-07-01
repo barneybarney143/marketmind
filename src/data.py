@@ -50,6 +50,22 @@ class DataDownloader:
                 raise ValueError(
                     f"No data returned for ticker '{cache_key}'"
                 )
+
+            df.index.name = "date"
+
+            if isinstance(df.columns, pd.MultiIndex):
+                df = df.swaplevel(0, 1, axis=1)
+                mask = df.columns.get_level_values(1) == "Close"
+                df = df.loc[:, mask]
+                df.columns = [str(c[0]) for c in df.columns]
+            else:
+                lower = [str(c).lower() for c in df.columns]
+                ohlcv = {"open", "high", "low", "close", "adj close", "volume"}
+                if set(lower) <= ohlcv:
+                    df.columns = pd.Index(lower)
+                else:
+                    df.columns = pd.Index([str(c) for c in df.columns])
+
             df.to_parquet(cache_file)
 
         df.index.name = "date"
@@ -61,6 +77,11 @@ class DataDownloader:
             df = df.loc[:, mask]
             df.columns = [str(c[0]) for c in df.columns]
         else:
-            df.columns = pd.Index([str(c).lower() for c in df.columns])
+            lower = [str(c).lower() for c in df.columns]
+            ohlcv = {"open", "high", "low", "close", "adj close", "volume"}
+            if set(lower) <= ohlcv:
+                df.columns = pd.Index(lower)
+            else:
+                df.columns = pd.Index([str(c) for c in df.columns])
 
         return df
