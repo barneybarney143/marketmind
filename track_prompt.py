@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime
 from pathlib import Path
+import textwrap
 
 import yaml
 
@@ -12,6 +13,14 @@ CONJUNCTIONS = {"and", "or", "but", "so", "because", "though", "although", "howe
 LOGIC_OPERATORS = {"&&", "||", "!", "==", "!=", ">", "<", ">=", "<="}
 
 DEFAULT_LOG_PATH = Path("logs/prompt_log.md")
+MAX_PROMPT_LENGTH = 80
+
+
+def shorten_prompt(text: str, max_len: int = MAX_PROMPT_LENGTH) -> str:
+    """Return the text truncated to at most ``max_len`` characters."""
+    if len(text) <= max_len:
+        return text
+    return textwrap.shorten(text, width=max_len, placeholder="...")
 
 
 def estimate_tokens(text: str) -> int:
@@ -86,9 +95,12 @@ def main() -> None:
     parser.add_argument("--log", default=str(DEFAULT_LOG_PATH), help="Log file path")
     args = parser.parse_args()
 
-    complexity = compute_complexity(args.prompt)
-    readability = compute_readability(args.prompt)
-    tokens = estimate_tokens(args.prompt)
+    raw_prompt = args.prompt
+    short_prompt = shorten_prompt(raw_prompt)
+
+    complexity = compute_complexity(raw_prompt)
+    readability = compute_readability(raw_prompt)
+    tokens = estimate_tokens(raw_prompt)
     quality = quality_from_readability(readability)
 
     data = {
@@ -98,6 +110,7 @@ def main() -> None:
         "session_id": args.session_id,
         "project": args.project,
         "file": args.file,
+        "prompt": short_prompt,
     }
 
     log_path = Path(args.log)

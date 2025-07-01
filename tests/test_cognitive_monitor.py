@@ -11,10 +11,15 @@ import analyze_cognitive_load
 
 def test_track_prompt_logging(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     log_file = tmp_path / "log.md"
+    long_prompt = (
+        "This is a very long prompt that should be shortened when it is logged "
+        "because it exceeds the limit. Extra text to ensure we go past the "
+        "threshold."
+    )
     argv = [
         "track_prompt.py",
         "--prompt",
-        "A simple test prompt",
+        long_prompt,
         "--session-id",
         "test",
         "--project",
@@ -29,6 +34,8 @@ def test_track_prompt_logging(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     assert log_file.exists()
     content = log_file.read_text()
     assert "complexity_score" in content
+    expected = track_prompt.shorten_prompt(long_prompt)
+    assert expected in content
 
 
 def test_analyze_cognitive_load(
