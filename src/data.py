@@ -14,74 +14,51 @@ class DataDownloader:
         self.cache_dir = cache_dir or Path("data")
         self.cache_dir.mkdir(exist_ok=True)
 
+    @staticmethod
+    def _normalize(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
+        """Return a normalized OHLCV DataFrame with prefixed columns."""
+        if isinstance(df.columns, pd.MultiIndex):
+            df = df.droplevel(-1, axis=1)
+        df.index = pd.to_datetime(df.index)
+        df.index.name = "date"
+        df = df.sort_index()
+
+        df = df.rename(columns=lambda c: str(c).lower().replace(" ", "_"))
+
+        required = ["open", "high", "low", "close", "adj_close", "volume"]
+        for col in required:
+            if col not in df.columns:
+                df[col] = pd.NA
+        df = df[required]
+        return df.add_prefix(f"{ticker.lower()}_")
+
     def get_history(
         self, ticker: str | Iterable[str], start: str, end: str
     ) -> pd.DataFrame:
-        """Return historical data for *ticker* between *start* and *end*.
+        """Return historical data for *ticker* between *start* and *end*."""
 
-        Parameters
-        ----------
-        ticker:
-            Ticker symbol or list of symbols understood by yfinance.
-        start:
-            Inclusive start date in ``YYYY-MM-DD`` format.
-        end:
-            Exclusive end date in ``YYYY-MM-DD`` format.
-        """
-        tickers = (
-            [ticker]
-            if isinstance(ticker, str)
-            else list(ticker)
-        )
-        cache_key = "-".join(tickers)
-        cache_file = self.cache_dir / f"{cache_key}.parquet"
+        tickers = [ticker] if isinstance(ticker, str) else list(ticker)
 
-        if cache_file.exists():
-            df = pd.read_parquet(cache_file)
-        else:
-            df = yf.download(
-                tickers,
-                start=start,
-                end=end,
-                progress=False,
-                auto_adjust=False,
-            )
-            if df.empty:
-                raise ValueError(
-                    f"No data returned for ticker '{cache_key}'"
+        dfs: list[pd.DataFrame] = []
+        for t in tickers:
+            cache_file = self.cache_dir / f"{t}-{start}-{end}.parquet"
+            if cache_file.exists():
+                df_t = pd.read_parquet(cache_file)
+            else:
+                df_t = yf.download(
+                    t,
+                    start=start,
+                    end=end,
+                    progress=False,
+                    auto_adjust=False,
                 )
+                if df_t.empty:
+                    raise ValueError(f"No data returned for ticker '{t}'")
+                df_t = self._normalize(df_t, t)
+                df_t.to_parquet(cache_file)
+            dfs.append(df_t)
 
-            df.index.name = "date"
-
-            if isinstance(df.columns, pd.MultiIndex):
-                df = df.swaplevel(0, 1, axis=1)
-                mask = df.columns.get_level_values(1) == "Close"
-                df = df.loc[:, mask]
-                df.columns = [str(c[0]) for c in df.columns]
-            else:
-                lower = [str(c).lower() for c in df.columns]
-                ohlcv = {"open", "high", "low", "close", "adj close", "volume"}
-                if set(lower) <= ohlcv:
-                    df.columns = pd.Index(lower)
-                else:
-                    df.columns = pd.Index([str(c) for c in df.columns])
-
-            df.to_parquet(cache_file)
-
-        df.index.name = "date"
-        df = df.loc[pd.Timestamp(start) : pd.Timestamp(end)]
-
-        if isinstance(df.columns, pd.MultiIndex):
-            df = df.swaplevel(0, 1, axis=1)
-            mask = df.columns.get_level_values(1) == "Close"
-            df = df.loc[:, mask]
-            df.columns = [str(c[0]) for c in df.columns]
-        else:
-            lower = [str(c).lower() for c in df.columns]
-            ohlcv = {"open", "high", "low", "close", "adj close", "volume"}
-            if set(lower) <= ohlcv:
-                df.columns = pd.Index(lower)
-            else:
-                df.columns = pd.Index([str(c) for c in df.columns])
-
-        return df
+        combined = pd.concat(dfs, axis=1)
+        combined.index.name = "date"
+        combined = combined.sort_index()
+        return combined.loc[pd.Timestamp(start) : pd.Timestamp(end)]
