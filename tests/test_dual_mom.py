@@ -38,17 +38,29 @@ def test_backtester_multi_asset() -> None:
 def test_downloader_and_backtester_multi_asset(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    def fake_download(*args: str, **kwargs: str) -> pd.DataFrame:
+    def fake_download(ticker: str, *args: str, **kwargs: str) -> pd.DataFrame:
         index = pd.date_range("2020-01-01", periods=3, freq="D")
-        arrays = [("Close", "AAA"), ("Close", "BBB")]
-        cols = pd.MultiIndex.from_tuples(arrays, names=["Price", "Ticker"])
-        return pd.DataFrame([[1, 2], [2, 1], [3, 0]], index=index, columns=cols)
+        data = {
+            "Open": [1, 2, 3],
+            "High": [1, 2, 3],
+            "Low": [1, 2, 3],
+            "Close": [1, 2, 3],
+            "Adj Close": [1, 2, 3],
+            "Volume": [1, 1, 1],
+        }
+        return pd.DataFrame(data, index=index)
 
     monkeypatch.setattr(yf, "download", fake_download)
 
     downloader = DataDownloader(cache_dir=tmp_path)
     data = downloader.get_history(["AAA", "BBB"], "2020-01-01", "2020-01-04")
+    close_cols = {
+        "AAA": "aaa_close",
+        "BBB": "bbb_close",
+    }
+    rename_map = {v: k for k, v in close_cols.items()}
+    closes = data[list(close_cols.values())].rename(columns=rename_map)
     strategy = DualMomentumStrategy(["AAA", "BBB"], lookback_weeks=1)
-    bt = Backtester(strategy, data)
+    bt = Backtester(strategy, closes)
     results = bt.run()
     assert len(results) == len(data)
