@@ -61,4 +61,9 @@ class DataDownloader:
         combined = pd.concat(dfs, axis=1)
         combined.index.name = "date"
         combined = combined.sort_index()
+
+        if len(tickers) == 1:
+            prefix = f"{tickers[0].lower()}_"
+            combined = combined.rename(columns=lambda c: c.removeprefix(prefix))
+
         return combined.loc[pd.Timestamp(start) : pd.Timestamp(end)]
