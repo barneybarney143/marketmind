@@ -53,7 +53,14 @@ def test_signal_main(
 ) -> None:
     def fake_get_history(*args: str, **kwargs: str) -> pd.DataFrame:
         index = pd.date_range("2020-01-01", periods=5, freq="D")
-        return pd.DataFrame({"close": [1, 2, 3, 4, 5]}, index=index)
+        return pd.DataFrame(
+            {
+                "close": [1, 2, 3, 4, 5],
+                "high": [2, 3, 4, 5, 6],
+                "low": [1, 1, 2, 3, 4],
+            },
+            index=index,
+        )
 
     monkeypatch.setattr(signal.DataDownloader, "get_history", fake_get_history)
 
@@ -70,5 +77,43 @@ def test_signal_main(
 
     signal.main()
     out = capsys.readouterr().out.strip()
-    assert out in {"BUY", "SELL", "HOLD"}
+    name, val = out.split(": ")
+    assert name == "rsi"
+    assert val in {"BUY", "SELL", "HOLD"}
+
+
+def test_signal_main_all(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    def fake_get_history(*args: str, **kwargs: str) -> pd.DataFrame:
+        index = pd.date_range("2020-01-01", periods=5, freq="D")
+        return pd.DataFrame(
+            {
+                "close": [1, 2, 3, 4, 5],
+                "high": [2, 3, 4, 5, 6],
+                "low": [1, 1, 2, 3, 4],
+            },
+            index=index,
+        )
+
+    monkeypatch.setattr(signal.DataDownloader, "get_history", fake_get_history)
+
+    argv = [
+        "signal.py",
+        "--all",
+        "--ticker",
+        "TEST",
+        "--lookback",
+        "5",
+    ]
+    monkeypatch.setattr(sys, "argv", argv)
+
+    signal.main()
+    out_lines = capsys.readouterr().out.strip().splitlines()
+    assert len(out_lines) == len(signal.STRATEGIES)
+    for line in out_lines:
+        name, val = line.split(": ")
+        assert name in signal.STRATEGIES
+        assert val in {"BUY", "SELL", "HOLD", "N/A"}
 
