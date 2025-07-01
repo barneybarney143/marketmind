@@ -22,3 +22,15 @@ class Strategy(ABC):
     def next_bar(self, bar: pd.Series[Any]) -> str:
         """Process the next market bar and return a trading signal."""
         raise NotImplementedError
+
+
+class HistoryStrategy(Strategy):
+    """Strategy base class that stores historical close prices."""
+
+    def __init__(self, **params: Any) -> None:
+        super().__init__(**params)
+        self._close_history = pd.Series(dtype=float)
+
+    def reset(self) -> None:
+        super().reset()
+        self._close_history = pd.Series(dtype=float)

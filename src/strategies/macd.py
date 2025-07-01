@@ -4,10 +4,10 @@ from typing import Any
 
 import pandas as pd
 
-from .base import Strategy as BaseStrategy
+from .base import HistoryStrategy
 
 
-class MACDStrategy(BaseStrategy):
+class MACDStrategy(HistoryStrategy):
     """Moving Average Convergence Divergence crossover strategy."""
 
     def __init__(self, fast: int = 12, slow: int = 26, signal: int = 9) -> None:
@@ -15,11 +15,6 @@ class MACDStrategy(BaseStrategy):
         self.fast = fast
         self.slow = slow
         self.signal = signal
-        self._close_history = pd.Series(dtype=float)
-
-    def reset(self) -> None:
-        super().reset()
-        self._close_history = pd.Series(dtype=float)
 
     def next_bar(self, bar: pd.Series[Any]) -> str:
         if not isinstance(bar.name, pd.Timestamp):

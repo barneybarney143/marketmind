@@ -4,7 +4,7 @@ from typing import Any
 
 import pandas as pd
 
-from .base import Strategy as BaseStrategy
+from .base import HistoryStrategy
 
 
 def wilder_rsi(series: pd.Series[float], length: int = 14) -> pd.Series[float]:
@@ -23,7 +23,7 @@ def wilder_rsi(series: pd.Series[float], length: int = 14) -> pd.Series[float]:
     return rsi
 
 
-class RSIStrategy(BaseStrategy):
+class RSIStrategy(HistoryStrategy):
     """Weekly RSI mean-reversion strategy."""
 
     def __init__(
@@ -33,11 +33,6 @@ class RSIStrategy(BaseStrategy):
         self.rsi_buy = rsi_buy
         self.rsi_sell = rsi_sell
         self.length = length
-        self._close_history = pd.Series(dtype=float)
-
-    def reset(self) -> None:
-        super().reset()
-        self._close_history = pd.Series(dtype=float)
 
     def next_bar(self, bar: pd.Series[Any]) -> str:
         """Return trading signal based on weekly RSI."""

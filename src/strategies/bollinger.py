@@ -4,21 +4,18 @@ from typing import Any
 
 import pandas as pd
 
-from .base import Strategy as BaseStrategy
+from .base import HistoryStrategy
 
 
-class BollingerStrategy(BaseStrategy):
+class BollingerStrategy(HistoryStrategy):
     """Weekly Bollinger Band mean-reversion strategy."""
 
     def __init__(self, length: int = 20, dev: float = 2.0) -> None:
         super().__init__(length=length, dev=dev)
         self.length = length
         self.dev = dev
-        self._close_history = pd.Series(dtype=float)
 
-    def reset(self) -> None:
-        super().reset()
-        self._close_history = pd.Series(dtype=float)
+
 
     def next_bar(self, bar: pd.Series[Any]) -> str:
         if not isinstance(bar.name, pd.Timestamp):

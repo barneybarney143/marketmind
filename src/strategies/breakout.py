@@ -4,22 +4,20 @@ from typing import Any
 
 import pandas as pd
 
-from .base import Strategy as BaseStrategy
+from .base import HistoryStrategy
 
 
-class BreakoutStrategy(BaseStrategy):
+class BreakoutStrategy(HistoryStrategy):
     """52-week high breakout momentum strategy."""
 
     def __init__(self, lookback_weeks: int = 52, stop_pct: float = 0.08) -> None:
         super().__init__(lookback_weeks=lookback_weeks, stop_pct=stop_pct)
         self.lookback_weeks = lookback_weeks
         self.stop_pct = stop_pct
-        self._close_history = pd.Series(dtype=float)
         self._highest_close: float | None = None
 
     def reset(self) -> None:
         super().reset()
-        self._close_history = pd.Series(dtype=float)
         self._highest_close = None
 
     def next_bar(self, bar: pd.Series[Any]) -> str:
