@@ -10,7 +10,7 @@ Use this setup as a starting point for new projects that require a light-weight 
 Install the dependencies first:
 
 ```bash
-pip install -r requirements-dev.txt
+pip install -e .[dev]
 ```
 
 Set up the pre-commit hooks after installing the requirements:
@@ -54,7 +54,6 @@ PYTHONPATH=./src python scripts/signal.py \
 Run the interactive web app locally:
 
 ```bash
-# local
-pip install -e .[dev] streamlit plotly
+pip install -e .[streamlit]
 streamlit run streamlit_app.py
 ```

@@ -1,11 +1,1 @@
-ruff
-pytest
-pandas
-yfinance
-mypy
-pandas-stubs
-pyarrow
-coverage
-pytest-cov
-black
-pre-commit
+-e .[dev]
