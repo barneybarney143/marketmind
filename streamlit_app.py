@@ -102,6 +102,25 @@ def latest_signal(
     )
     st.markdown(badge, unsafe_allow_html=True)
 
+
+def all_latest_signals(ticker: str, start: str, end: str) -> None:
+    try:
+        data = load_data(ticker, start, end)
+    except Exception as exc:  # noqa: BLE001
+        st.error(f"Data download failed: {exc}")
+        return
+
+    results = []
+    for name, cls in strategies.STRATEGIES.items():
+        strat = cls()
+        signal = "HOLD"
+        for _, row in data.iterrows():
+            signal = strat.next_bar(row)
+        results.append({"Strategy": name, "Signal": signal})
+
+    df = pd.DataFrame(results)
+    st.table(df)
+
 def main() -> None:
     strat_names = [n for n in strategies.__all__ if n != "STRATEGIES"]
     strat_name = st.sidebar.selectbox("Strategy", strat_names)
@@ -116,6 +135,8 @@ def main() -> None:
         run_backtest(strategy_cls, ticker, str(start), str(end), params)
     if st.sidebar.button("Latest Signal"):
         latest_signal(strategy_cls, ticker, str(start), str(end), params)
+    if st.sidebar.button("All Strategy Signals"):
+        all_latest_signals(ticker, str(start), str(end))
 
 
 if __name__ == "__main__":

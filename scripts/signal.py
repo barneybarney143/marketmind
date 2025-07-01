@@ -23,7 +23,9 @@ def load_strategy(name: str) -> Strategy:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Show latest trading signal")
-    parser.add_argument("--strategy", required=True, help="Strategy module name")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--strategy", help="Strategy module name")
+    group.add_argument("--all", action="store_true", help="Run all strategies")
     parser.add_argument("--ticker", required=True, help="Ticker symbol")
     parser.add_argument(
         "--lookback",
@@ -38,13 +40,24 @@ def main() -> None:
 
     downloader = DataDownloader()
     data = downloader.get_history(args.ticker, str(start), str(end))
-    strategy = load_strategy(args.strategy)
 
-    signal = "HOLD"
-    for _, bar in data.iterrows():
-        signal = strategy.next_bar(bar)
+    strat_names: list[str]
+    if args.all:
+        strat_names = list(STRATEGIES.keys())
+    else:
+        assert args.strategy is not None
+        strat_names = [args.strategy]
 
-    print(signal)
+    for name in strat_names:
+        try:
+            strategy = load_strategy(name)
+        except TypeError:
+            print(f"{name}: N/A")
+            continue
+        signal = "HOLD"
+        for _, bar in data.iterrows():
+            signal = strategy.next_bar(bar)
+        print(f"{name}: {signal}")
 
 
 if __name__ == "__main__":

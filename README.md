@@ -48,6 +48,11 @@ You can print the most recent signal for a ticker with:
 PYTHONPATH=./src python scripts/signal.py \
   --strategy rsi --ticker AAPL --lookback 365
 ```
+To check the latest signal from every strategy:
+```bash
+PYTHONPATH=./src python scripts/signal.py \
+  --all --ticker AAPL --lookback 365
+```
 
 ## Streamlit UI
 
