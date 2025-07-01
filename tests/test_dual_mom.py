@@ -4,11 +4,14 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import pytest
+import yfinance as yf
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from engine import Backtester  # noqa: E402
 from strategies.dual_mom import DualMomentumStrategy  # noqa: E402
+from data import DataDownloader  # noqa: E402
 
 
 def test_dual_mom_signals() -> None:
@@ -30,3 +33,22 @@ def test_backtester_multi_asset() -> None:
     results = bt.run()
     assert len(results) == len(data)
     assert any(t[0] == "BUY" for t in bt.trades)
+
+
+def test_downloader_and_backtester_multi_asset(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    def fake_download(*args: str, **kwargs: str) -> pd.DataFrame:
+        index = pd.date_range("2020-01-01", periods=3, freq="D")
+        arrays = [("Close", "AAA"), ("Close", "BBB")]
+        cols = pd.MultiIndex.from_tuples(arrays, names=["Price", "Ticker"])
+        return pd.DataFrame([[1, 2], [2, 1], [3, 0]], index=index, columns=cols)
+
+    monkeypatch.setattr(yf, "download", fake_download)
+
+    downloader = DataDownloader(cache_dir=tmp_path)
+    data = downloader.get_history(["AAA", "BBB"], "2020-01-01", "2020-01-04")
+    strategy = DualMomentumStrategy(["AAA", "BBB"], lookback_weeks=1)
+    bt = Backtester(strategy, data)
+    results = bt.run()
+    assert len(results) == len(data)
