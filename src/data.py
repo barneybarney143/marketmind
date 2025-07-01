@@ -32,6 +32,8 @@ class DataDownloader:
             df = yf.download(
                 ticker, start=start, end=end, progress=False, auto_adjust=False
             )
+            if df.empty:
+                raise ValueError(f"No data returned for ticker '{ticker}'")
             df.to_parquet(cache_file)
         df.index.name = "date"
         df = df.loc[pd.Timestamp(start) : pd.Timestamp(end)]
