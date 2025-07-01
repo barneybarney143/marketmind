@@ -24,6 +24,7 @@ dev = [
     "black>=25",
     "pre-commit",
     "pandas-stubs>=2.2",
+    "types-PyYAML>=6",
 ]
 streamlit = [
     "streamlit>=1.46",
