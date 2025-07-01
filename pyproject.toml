@@ -23,6 +23,7 @@ dev = [
     "coverage>=7",
     "black>=25",
     "pre-commit",
+    "pandas-stubs>=2.2",
 ]
 streamlit = [
     "streamlit>=1.46",
