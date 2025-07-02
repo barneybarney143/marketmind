@@ -8,19 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any, cast
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 from data import DataDownloader
 from engine import Backtester
 from metrics import cagr, max_drawdown
-import strategies
+from strategies import STRATEGIES
 from strategies.base import Strategy
-
-STRATEGIES = {
-    name.removesuffix("Strategy").lower(): getattr(strategies, name)
-    for name in strategies.__all__
-    if name != "STRATEGIES"
-}
 
 
 def generate_param_grid(params: dict[str, Any]) -> list[dict[str, Any]]:
@@ -28,18 +22,9 @@ def generate_param_grid(params: dict[str, Any]) -> list[dict[str, Any]]:
 
     Any value that is a list will be expanded. Single values are kept as-is.
     """
-    keys = list(params.keys())
-    values: list[list[Any]] = []
-    for v in params.values():
-        if isinstance(v, list):
-            values.append(v)
-        else:
-            values.append([v])
-
-    grid = []
-    for combo in itertools.product(*values):
-        grid.append(dict(zip(keys, combo)))
-    return grid
+    keys = list(params)
+    values = [v if isinstance(v, list) else [v] for v in params.values()]
+    return [dict(zip(keys, combo)) for combo in itertools.product(*values)]
 
 
 def load_strategy(name: str, params: dict[str, float]) -> Strategy:

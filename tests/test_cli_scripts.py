@@ -10,7 +10,15 @@ project_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(project_root / "src"))
 sys.path.insert(0, str(project_root))
 
-from scripts import backtest, signal  # noqa: E402
+import importlib.util  # noqa: E402
+
+import backtest  # noqa: E402
+
+signal_path = project_root / "signal_cli.py"
+spec = importlib.util.spec_from_file_location("signal_cli", signal_path)
+assert spec and spec.loader
+signal_cli = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(signal_cli)
 
 
 def test_backtest_main(
@@ -62,10 +70,10 @@ def test_signal_main(
             index=index,
         )
 
-    monkeypatch.setattr(signal.DataDownloader, "get_history", fake_get_history)
+    monkeypatch.setattr(signal_cli.DataDownloader, "get_history", fake_get_history)
 
     argv = [
-        "signal.py",
+        "signal_cli.py",
         "--strategy",
         "rsi",
         "--ticker",
@@ -75,7 +83,7 @@ def test_signal_main(
     ]
     monkeypatch.setattr(sys, "argv", argv)
 
-    signal.main()
+    signal_cli.main()
     out = capsys.readouterr().out.strip()
     name, val = out.split(": ")
     assert name == "rsi"
@@ -97,10 +105,10 @@ def test_signal_main_all(
             index=index,
         )
 
-    monkeypatch.setattr(signal.DataDownloader, "get_history", fake_get_history)
+    monkeypatch.setattr(signal_cli.DataDownloader, "get_history", fake_get_history)
 
     argv = [
-        "signal.py",
+        "signal_cli.py",
         "--all",
         "--ticker",
         "TEST",
@@ -109,11 +117,11 @@ def test_signal_main_all(
     ]
     monkeypatch.setattr(sys, "argv", argv)
 
-    signal.main()
+    signal_cli.main()
     out_lines = capsys.readouterr().out.strip().splitlines()
-    assert len(out_lines) == len(signal.STRATEGIES)
+    assert len(out_lines) == len(signal_cli.STRATEGIES)
     for line in out_lines:
         name, val = line.split(": ")
-        assert name in signal.STRATEGIES
+        assert name in signal_cli.STRATEGIES
         assert val in {"BUY", "SELL", "HOLD", "N/A"}
 
