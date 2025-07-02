@@ -19,3 +19,8 @@ repos:
         entry: pytest -q
         language: system
         pass_filenames: false
+      - id: import-cycles
+        name: import-cycles
+        entry: pytest -q tests/test_import_cycles.py
+        language: system
+        pass_filenames: false
