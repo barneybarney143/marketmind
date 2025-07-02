@@ -36,16 +36,17 @@ def fetch(
         Mapping of canonical ticker to :class:`pandas.DataFrame` with OHLCV data.
     """
     symbols = [tickers] if isinstance(tickers, str) else list(tickers)
-    if end is None:
-        end = datetime.utcnow().date().isoformat()
+    end = end or datetime.utcnow().date().isoformat()
 
     downloader = DataDownloader()
-    result: dict[str, pd.DataFrame] = {}
-    for sym in symbols:
-        remote = _UCITS.get(sym, sym) if ucits_map else sym
-        df = downloader.get_history(remote, start, end)
-        result[sym] = df
-    return result
+    return {
+        sym: downloader.get_history(
+            _UCITS.get(sym, sym) if ucits_map else sym,
+            start,
+            end,
+        )
+        for sym in symbols
+    }
 
 
 def _main() -> None:
