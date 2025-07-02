@@ -12,7 +12,8 @@ import yaml
 CONJUNCTIONS = {"and", "or", "but", "so", "because", "though", "although", "however"}
 LOGIC_OPERATORS = {"&&", "||", "!", "==", "!=", ">", "<", ">=", "<="}
 
-DEFAULT_LOG_PATH = Path("logs/prompt_log.md")
+PROJECT_ROOT = Path(__file__).resolve().parent
+DEFAULT_LOG_PATH = PROJECT_ROOT / "logs" / "prompt_log.md"
 MAX_PROMPT_LENGTH = 80
 
 
