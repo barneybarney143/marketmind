@@ -43,6 +43,14 @@ if "plotly" not in sys.modules:
     sys.modules["plotly"] = plotly_stub
     sys.modules["plotly.graph_objects"] = go_stub
 
+try:
+    import jinja2  # noqa: F401
+except Exception:
+    jinja_stub = ModuleType("jinja2")
+    jinja_stub.__version__ = "3.1.2"
+    jinja_stub.PackageLoader = lambda *a, **k: None
+    sys.modules["jinja2"] = jinja_stub
+
 import streamlit_app
 
 
