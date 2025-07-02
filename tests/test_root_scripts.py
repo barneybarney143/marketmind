@@ -51,6 +51,11 @@ except Exception:
     jinja_stub.PackageLoader = lambda *a, **k: None
     sys.modules["jinja2"] = jinja_stub
 
+if "markupsafe" not in sys.modules:
+    markupsafe_stub = ModuleType("markupsafe")
+    markupsafe_stub.escape = lambda x: x
+    sys.modules["markupsafe"] = markupsafe_stub
+
 import streamlit_app
 
 
