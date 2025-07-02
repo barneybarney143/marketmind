@@ -35,10 +35,7 @@ class DataDownloader:
         df = df.rename(columns=lambda c: str(c).lower().replace(" ", "_"))
 
         required = ["open", "high", "low", "close", "adj_close", "volume"]
-        for col in required:
-            if col not in df.columns:
-                df[col] = pd.NA
-        df = df[required]
+        df = df.reindex(columns=required).fillna(pd.NA)
         return df.add_prefix(f"{ticker.lower()}_")
 
     def get_history(

@@ -7,19 +7,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 sys.modules["signal"] = _signal
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 from data import DataDownloader  # noqa: E402
-import strategies  # noqa: E402
+from strategies import STRATEGIES  # noqa: E402
 from strategies.base import Strategy  # noqa: E402
 from typing import cast  # noqa: E402
-
-STRATEGIES = {
-    name.removesuffix("Strategy").lower(): getattr(strategies, name)
-    for name in strategies.__all__
-    if name != "STRATEGIES"
-}
-
 
 def load_strategy(name: str) -> Strategy:
     cls = STRATEGIES.get(name)
@@ -61,10 +54,10 @@ def main() -> None:
         except TypeError:
             print(f"{name}: N/A")
             continue
-        signal = "HOLD"
+        signal_value: str | dict[str, float] = "HOLD"
         for _, bar in data.iterrows():
-            signal = strategy.next_bar(bar)
-        out = signal if isinstance(signal, str) else "N/A"
+            signal_value = strategy.next_bar(bar)
+        out = signal_value if isinstance(signal_value, str) else "N/A"
         print(f"{name}: {out}")
 
 

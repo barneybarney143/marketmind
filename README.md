@@ -22,14 +22,14 @@ pre-commit install
 Run the helper scripts by pointing `PYTHONPATH` at the `src` directory:
 
 ```bash
-PYTHONPATH=./src python scripts/backtest.py ...
-PYTHONPATH=./src python scripts/signal.py ...
+PYTHONPATH=./src python backtest.py ...
+PYTHONPATH=./src python signal.py ...
 ```
 
 For example, run a simple back-test of the RSI strategy on AAPL:
 
 ```bash
-PYTHONPATH=./src python scripts/backtest.py \
+PYTHONPATH=./src python backtest.py \
   --strategy rsi --ticker AAPL --start 2020-01-01 --end 2021-01-01 \
   --params '{"rsi_buy": 30, "rsi_sell": 70}'
 ```
@@ -37,7 +37,7 @@ PYTHONPATH=./src python scripts/backtest.py \
 To sweep parameter combinations, pass lists in `--params` and add `--sweep`:
 
 ```bash
-PYTHONPATH=./src python scripts/backtest.py \
+PYTHONPATH=./src python backtest.py \
   --strategy rsi --ticker AAPL --start 2020-01-01 --end 2021-01-01 \
   --params '{"rsi_buy": [20, 30], "rsi_sell": [70, 80]}' --sweep
 ```
@@ -45,12 +45,12 @@ PYTHONPATH=./src python scripts/backtest.py \
 You can print the most recent signal for a ticker with:
 
 ```bash
-PYTHONPATH=./src python scripts/signal.py \
+PYTHONPATH=./src python signal.py \
   --strategy rsi --ticker AAPL --lookback 365
 ```
 To check the latest signal from every strategy:
 ```bash
-PYTHONPATH=./src python scripts/signal.py \
+PYTHONPATH=./src python signal.py \
   --all --ticker AAPL --lookback 365
 ```
 
@@ -68,8 +68,18 @@ streamlit run streamlit_app.py
 Fetch price history from the command line:
 
 ```bash
-python scripts/fetch.py --tickers "SPY,IDTL" --start 2020-01-01 --end 2020-01-10 \
+python fetch.py --tickers "SPY,IDTL" --start 2020-01-01 --end 2020-01-10 \
   --csv-out data
+```
+
+## Checking code quality
+
+Before committing, run the linters, type checker, and tests:
+
+```bash
+ruff check .
+mypy
+pytest -q
 ```
 
 ## EU-friendly Reddit strategies
