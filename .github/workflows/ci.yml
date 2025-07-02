@@ -22,7 +22,7 @@ jobs:
       - name: Run ruff
         run: ruff check .
       - name: Run mypy
-        run: mypy --install-types --non-interactive --show-error-codes src
+        run: mypy --show-error-codes src
       - name: Run pytest
         run: pytest -q -m "not network" --cov=src --cov-report=xml --cov-fail-under=90
       - name: Upload coverage artifact
