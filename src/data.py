@@ -6,6 +6,15 @@ from typing import Iterable
 import pandas as pd
 import yfinance as yf
 
+# map US tickers to UCITS equivalents
+ticker_map = {
+    "UPRO": "3USL",
+    "TMF": "3TYL",
+    "TQQQ": "QQQ3",
+    "SPY": "CSPX",
+    "TLT": "IDTL",
+}
+
 
 class DataDownloader:
     """Download and cache historical OHLCV data."""
@@ -38,6 +47,7 @@ class DataDownloader:
         """Return historical data for *ticker* between *start* and *end*."""
 
         tickers = [ticker] if isinstance(ticker, str) else list(ticker)
+        tickers = [ticker_map.get(t.upper(), t) for t in tickers]
 
         dfs: list[pd.DataFrame] = []
         for t in tickers:

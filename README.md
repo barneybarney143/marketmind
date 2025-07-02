@@ -54,6 +54,18 @@ PYTHONPATH=./src python scripts/signal.py \
   --all --ticker AAPL --lookback 365
 ```
 
+## EU-friendly Reddit strategies
+
+The following US tickers are automatically translated to UCITS ETFs when running the scripts:
+
+| US Ticker | UCITS Symbol |
+|-----------|--------------|
+| UPRO | 3USL |
+| TMF  | 3TYL |
+| TQQQ | QQQ3 |
+| SPY  | CSPX |
+| TLT  | IDTL |
+
 ## Streamlit UI
 
 Run the interactive web app locally:

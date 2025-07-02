@@ -67,8 +67,16 @@ def main() -> None:
     results_dir = Path("results")
     results_dir.mkdir(exist_ok=True)
 
+    defaults = {
+        "leveragedtrend": {"sma_len": [150, 200, 250]},
+        "hfea55": {"rebalance_days": [20, 21, 22]},
+        "median_cc": {"band": [0.5, 1.0, 1.5]},
+        "eom_bond": {"hold_days": [5, 7, 9]},
+    }
+
     for strat_name in strategies:
-        param_sets = generate_param_grid(base_params) if args.sweep else [base_params]
+        params_in = {**defaults.get(strat_name, {}), **base_params}
+        param_sets = generate_param_grid(params_in) if args.sweep else [params_in]
         for params in param_sets:
             strategy = load_strategy(strat_name, params)
             downloader = DataDownloader()

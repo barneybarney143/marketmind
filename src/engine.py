@@ -18,6 +18,7 @@ class Backtester:
         self.equity = 1.0
         self.trades: List[tuple[str, str, pd.Timestamp, float]] = []
         self._multi_asset = "close" not in self.data.columns
+        self.weights: Dict[str, float] = {}
 
     def run(self) -> pd.DataFrame:
         """Run the back-test and return equity curve."""
@@ -29,7 +30,22 @@ class Backtester:
             ts = pd.Timestamp(str(date))
 
             # compute return for current holding before processing today's signal
-            if self.position == 1 and self.symbol is not None:
+            if isinstance(self.weights, dict) and self.weights:
+                # weighted portfolio return across multiple tickers
+                ret = 0.0
+                for t, w in self.weights.items():
+                    pc = prev_close.get(t)
+                    if pc is None:
+                        continue
+                    price = float(row[t])
+                    ret += w * (price - pc) / pc
+                price = (
+                    sum(float(row[t]) * w for t, w in self.weights.items())
+                    if self.weights
+                    else 0.0
+                )
+                # residual (1 - sum(weights)) acts as cash with zero return
+            elif self.position == 1 and self.symbol is not None:
                 price = float(row[self.symbol])
                 pc = prev_close.get(self.symbol)
                 ret = 0.0 if pc is None else (price - pc) / pc
@@ -43,7 +59,7 @@ class Backtester:
 
             signal = self.strategy.next_bar(row)
 
-            if self._multi_asset:
+            if self._multi_asset and isinstance(signal, str):
                 if signal.startswith("BUY:"):
                     ticker = signal.split(":", 1)[1]
                     if (
@@ -58,6 +74,7 @@ class Backtester:
                         self.trades.append(("BUY", ticker, ts, buy_price))
                         self.position = 1
                         self.symbol = ticker
+                        self.weights = {}
                 elif signal.startswith("SELL:"):
                     ticker = signal.split(":", 1)[1]
                     if self.position == 1 and self.symbol == ticker:
@@ -65,7 +82,8 @@ class Backtester:
                         self.trades.append(("SELL", ticker, ts, sell_price))
                         self.position = 0
                         self.symbol = None
-            else:
+                        self.weights = {}
+            elif not self._multi_asset:
                 if signal == "BUY" and self.position == 0:
                     self.position = 1
                     self.symbol = "close"
@@ -75,13 +93,17 @@ class Backtester:
                     self.position = 0
                     sell_price = float(row["close"])
                     self.trades.append(("SELL", "close", ts, sell_price))
+                    self.weights = {}
+            elif isinstance(signal, dict):
+                # rebalance weights for multi-asset portfolio
+                self.weights = signal
 
             results.append(
                 {
                     "date": ts,
                     "price": price,
                     "position": self.position,
-                    "signal": signal,
+                    "signal": signal if not isinstance(signal, dict) else str(signal),
                     "equity": self.equity,
                     "drawdown": drawdown,
                 }
