@@ -50,3 +50,34 @@ def test_get_history_single_ticker_columns(monkeypatch, tmp_path):
         "adj_close",
         "volume",
     ]
+
+
+def test_get_history_parses_comma_separated(monkeypatch, tmp_path):
+    downloader = DataDownloader(cache_dir=tmp_path)
+
+    index = pd.date_range("2020-01-01", periods=1, freq="D")
+
+    def fake_download(ticker: str, *args: str, **kwargs: str) -> pd.DataFrame:
+        return pd.DataFrame(
+            {
+                "Open": [1],
+                "High": [2],
+                "Low": [1],
+                "Close": [1],
+                "Adj Close": [1],
+                "Volume": [1],
+            },
+            index=index,
+        )
+
+    monkeypatch.setattr(yf, "download", fake_download)
+
+    df = downloader.get_history("AAA,BBB", "2020-01-01", "2020-01-02")
+    expected_cols = [
+        f"aaa_{c}"
+        for c in ["open", "high", "low", "close", "adj_close", "volume"]
+    ] + [
+        f"bbb_{c}"
+        for c in ["open", "high", "low", "close", "adj_close", "volume"]
+    ]
+    assert list(df.columns) == expected_cols

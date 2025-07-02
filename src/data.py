@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Iterable
+import re
 
 import pandas as pd
 import yfinance as yf
@@ -46,7 +47,10 @@ class DataDownloader:
     ) -> pd.DataFrame:
         """Return historical data for *ticker* between *start* and *end*."""
 
-        tickers = [ticker] if isinstance(ticker, str) else list(ticker)
+        if isinstance(ticker, str):
+            tickers = [t.strip() for t in re.split(r"[,\s]+", ticker) if t.strip()]
+        else:
+            tickers = list(ticker)
 
         remote_map = {t: ticker_map.get(t, t) for t in tickers}
 
