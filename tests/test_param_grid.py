@@ -7,7 +7,7 @@ project_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(project_root / "src"))
 sys.path.insert(0, str(project_root))
 
-from scripts.backtest import generate_param_grid  # noqa: E402
+from backtest import generate_param_grid  # noqa: E402
 
 
 def test_generate_param_grid() -> None:

@@ -11,7 +11,7 @@ sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(project_root / "src"))
 
 import fetch_data  # noqa: E402
-from scripts import fetch as fetch_cli  # noqa: E402
+import fetch as fetch_cli  # noqa: E402
 
 
 def _fake_history(*args: str, **kwargs: str) -> pd.DataFrame:
