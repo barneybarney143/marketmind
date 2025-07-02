@@ -13,8 +13,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from data import DataDownloader
 from engine import Backtester
 from metrics import cagr, max_drawdown
-from strategies import STRATEGIES
+import strategies
 from strategies.base import Strategy
+
+STRATEGIES = {
+    name.removesuffix("Strategy").lower(): getattr(strategies, name)
+    for name in strategies.__all__
+    if name != "STRATEGIES"
+}
 
 
 def generate_param_grid(params: dict[str, Any]) -> list[dict[str, Any]]:
@@ -57,6 +63,13 @@ def main() -> None:
 
     base_params: dict[str, Any] = json.loads(args.params)
 
+    default_grids: dict[str, dict[str, list[float]]] = {
+        "leveragedtrend": {"sma_len": [150, 200, 250]},
+        "hfea55": {"rebalance_days": [20, 21, 22]},
+        "median_cc": {"band": [0.005, 0.01, 0.015]},
+        "eom_bond": {"hold_days": [5, 7, 9]},
+    }
+
     strategies: list[str]
     if args.all:
         strategies = list(STRATEGIES.keys())
@@ -68,7 +81,14 @@ def main() -> None:
     results_dir.mkdir(exist_ok=True)
 
     for strat_name in strategies:
-        param_sets = generate_param_grid(base_params) if args.sweep else [base_params]
+        params_for_strat = base_params or (
+            default_grids.get(strat_name, {}) if args.sweep else {}
+        )
+        param_sets = (
+            generate_param_grid(params_for_strat)
+            if args.sweep
+            else [params_for_strat]
+        )
         for params in param_sets:
             strategy = load_strategy(strat_name, params)
             downloader = DataDownloader()

@@ -70,3 +70,7 @@ This project follows strict linting and typing rules. The main tools are:
 All code must pass Ruff, mypy, and pytest locally before being committed. Continuous integration runs these tools on every push and pull request to `main`.
 
 Consider the instructions in SYSTEM.md!
+
+## Project Index
+- [README](README.md)
+- [Strategy Descriptions](docs/strategies.md)

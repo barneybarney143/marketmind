@@ -10,9 +10,15 @@ sys.modules["signal"] = _signal
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from data import DataDownloader  # noqa: E402
-from strategies import STRATEGIES  # noqa: E402
+import strategies  # noqa: E402
 from strategies.base import Strategy  # noqa: E402
 from typing import cast  # noqa: E402
+
+STRATEGIES = {
+    name.removesuffix("Strategy").lower(): getattr(strategies, name)
+    for name in strategies.__all__
+    if name != "STRATEGIES"
+}
 
 
 def load_strategy(name: str) -> Strategy:
@@ -58,7 +64,8 @@ def main() -> None:
         signal = "HOLD"
         for _, bar in data.iterrows():
             signal = strategy.next_bar(bar)
-        print(f"{name}: {signal}")
+        out = signal if isinstance(signal, str) else "N/A"
+        print(f"{name}: {out}")
 
 
 if __name__ == "__main__":

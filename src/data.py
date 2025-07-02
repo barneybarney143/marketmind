@@ -6,6 +6,15 @@ from typing import Iterable
 import pandas as pd
 import yfinance as yf
 
+# Map of US tickers to their UCITS equivalents
+ticker_map = {
+    "UPRO": "3USL",
+    "TMF": "3TYL",
+    "TQQQ": "QQQ3",
+    "SPY": "CSPX",
+    "TLT": "IDTL",
+}
+
 
 class DataDownloader:
     """Download and cache historical OHLCV data."""
@@ -39,22 +48,24 @@ class DataDownloader:
 
         tickers = [ticker] if isinstance(ticker, str) else list(ticker)
 
+        remote_map = {t: ticker_map.get(t, t) for t in tickers}
+
         dfs: list[pd.DataFrame] = []
-        for t in tickers:
-            cache_file = self.cache_dir / f"{t}-{start}-{end}.parquet"
+        for orig, remote in remote_map.items():
+            cache_file = self.cache_dir / f"{orig}-{start}-{end}.parquet"
             if cache_file.exists():
                 df_t = pd.read_parquet(cache_file)
             else:
                 df_t = yf.download(
-                    t,
+                    remote,
                     start=start,
                     end=end,
                     progress=False,
                     auto_adjust=False,
                 )
                 if df_t.empty:
-                    raise ValueError(f"No data returned for ticker '{t}'")
-                df_t = self._normalize(df_t, t)
+                    raise ValueError(f"No data returned for ticker '{remote}'")
+                df_t = self._normalize(df_t, orig)
                 df_t.to_parquet(cache_file)
             dfs.append(df_t)
 
