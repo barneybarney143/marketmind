@@ -71,3 +71,15 @@ Fetch price history from the command line:
 python scripts/fetch.py --tickers "SPY,IDTL" --start 2020-01-01 --end 2020-01-10 \
   --csv-out data
 ```
+
+## EU-friendly Reddit strategies
+
+The following UCITS ETFs are used to replicate popular leveraged Reddit portfolios in the EEA.
+
+| US Ticker | UCITS Ticker |
+|-----------|--------------|
+| UPRO | 3USL |
+| TMF  | 3TYL |
+| TQQQ | QQQ3 |
+| SPY  | CSPX |
+| TLT  | IDTL |

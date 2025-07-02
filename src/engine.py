@@ -18,6 +18,7 @@ class Backtester:
         self.equity = 1.0
         self.trades: List[tuple[str, str, pd.Timestamp, float]] = []
         self._multi_asset = "close" not in self.data.columns
+        self.weights: Dict[str, float] = {}
 
     def run(self) -> pd.DataFrame:
         """Run the back-test and return equity curve."""
@@ -29,7 +30,16 @@ class Backtester:
             ts = pd.Timestamp(str(date))
 
             # compute return for current holding before processing today's signal
-            if self.position == 1 and self.symbol is not None:
+            if self.weights:
+                ret = 0.0
+                price = 0.0
+                for sym, w in self.weights.items():
+                    pc = prev_close.get(sym)
+                    p = float(row[sym])
+                    price += w * p
+                    if pc is not None:
+                        ret += w * (p - pc) / pc
+            elif self.position == 1 and self.symbol is not None:
                 price = float(row[self.symbol])
                 pc = prev_close.get(self.symbol)
                 ret = 0.0 if pc is None else (price - pc) / pc
@@ -43,7 +53,11 @@ class Backtester:
 
             signal = self.strategy.next_bar(row)
 
-            if self._multi_asset:
+            if isinstance(signal, dict):
+                self.weights = signal
+                self.position = 1 if sum(signal.values()) > 0 else 0
+                self.symbol = None
+            elif self._multi_asset:
                 if signal.startswith("BUY:"):
                     ticker = signal.split(":", 1)[1]
                     if (

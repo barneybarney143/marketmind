@@ -19,7 +19,7 @@ class Strategy(ABC):
         self.today: pd.Timestamp | None = None
 
     @abstractmethod
-    def next_bar(self, bar: pd.Series[Any]) -> str:
+    def next_bar(self, bar: pd.Series[Any]) -> str | dict[str, float]:
         """Process the next market bar and return a trading signal."""
         raise NotImplementedError
 
