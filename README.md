@@ -62,3 +62,12 @@ Run the interactive web app locally:
 pip install -e .[streamlit]
 streamlit run streamlit_app.py
 ```
+
+## Quick data pull
+
+Fetch price history from the command line:
+
+```bash
+python scripts/fetch.py --tickers "SPY,IDTL" --start 2020-01-01 --end 2020-01-10 \
+  --csv-out data
+```
