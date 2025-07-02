@@ -2,23 +2,33 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from typing import Any
-
+import pandas as pd
 import pytest
 import yfinance as yf
-
-import pandas as pd
 
 from data import DataDownloader
 from engine import Backtester
 from strategies.base import Strategy
 
+SAMPLE_DIR = Path(__file__).with_name("test_data")
 
-def test_downloader_caches(tmp_path: Path) -> None:
+
+def load_sample(ticker: str) -> pd.DataFrame:
+    """Return fixture data for *ticker* with a synthetic index."""
+    df = pd.read_csv(SAMPLE_DIR / f"sample_{ticker}.csv")
+    df.index = pd.date_range("2024-01-01", periods=len(df), freq="D")
+    return df
+
+def test_downloader_caches(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     downloader = DataDownloader(cache_dir=tmp_path)
+
+    sample = load_sample("SPY")
+
+    monkeypatch.setattr(yf, "download", lambda *args, **kwargs: sample)
 
     df = downloader.get_history("SPY", "2020-01-01", "2020-01-10")
     cache_file = tmp_path / "SPY-2020-01-01-2020-01-10.parquet"
@@ -63,9 +73,8 @@ class DummyStrategy(Strategy):
         return "HOLD"
 
 
-def test_backtester_length(tmp_path: Path) -> None:
-    downloader = DataDownloader(cache_dir=tmp_path)
-    data = downloader.get_history("SPY", "2020-01-01", "2020-01-10")
+def test_backtester_length() -> None:
+    data = load_sample("SPY")
 
     strategy = DummyStrategy()
     bt = Backtester(strategy, data)
