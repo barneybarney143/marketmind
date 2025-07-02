@@ -19,7 +19,7 @@ class EndOfMonthBondPopStrategy(Strategy):
     def _in_window(ts: pd.Timestamp, hold_days: int) -> bool:
         end = ts + BMonthEnd(0)
         start = end - BDay(hold_days - 1)
-        return start <= ts <= end
+        return bool(start <= ts <= end)
 
     def next_bar(self, bar: pd.Series[Any]) -> str:
         if not isinstance(bar.name, pd.Timestamp):

@@ -29,7 +29,7 @@ class DualMomentumStrategy(BaseStrategy):
 
     @staticmethod
     def _is_month_end(ts: pd.Timestamp) -> bool:
-        return (ts + pd.Timedelta(days=1)).month != ts.month
+        return bool((ts + pd.Timedelta(days=1)).month != ts.month)
 
     def next_bar(self, bar: pd.Series[Any]) -> str:
         if not isinstance(bar.name, pd.Timestamp):

@@ -52,6 +52,10 @@ mypy_path = "src"
 module = "yfinance"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = ["pandas", "pandas.*"]
+ignore_missing_imports = true
+
 [tool.coverage.run]
 branch = true
 source = ["src", "."]

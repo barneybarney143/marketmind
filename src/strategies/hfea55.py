@@ -18,7 +18,7 @@ class HFEA55Strategy(Strategy):
 
     @staticmethod
     def _is_month_end(ts: pd.Timestamp) -> bool:
-        return ts == (ts + BMonthEnd(0))
+        return bool(ts == (ts + BMonthEnd(0)))
 
     def next_bar(self, bar: pd.Series[Any]) -> dict[str, float] | str:
         if not isinstance(bar.name, pd.Timestamp):

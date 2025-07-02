@@ -1,4 +1,5 @@
 import sys
+from types import ModuleType, SimpleNamespace
 from pathlib import Path
 from datetime import datetime, timedelta, date
 
@@ -8,6 +9,40 @@ import pytest
 import analyze_cognitive_load as acl
 import fetch_data
 import track_prompt
+
+# Provide lightweight stubs for optional third-party dependencies so that the
+# tests can run without the real packages installed.
+if "streamlit" not in sys.modules:
+    stubs = ModuleType("streamlit")
+
+    def cache_data(func=None, **kwargs):
+        def decorator(f):
+            return f
+
+        return decorator(func) if callable(func) else decorator
+
+    stubs.cache_data = cache_data
+    stubs.sidebar = SimpleNamespace()
+    sys.modules["streamlit"] = stubs
+
+if "plotly" not in sys.modules:
+    plotly_stub = ModuleType("plotly")
+    go_stub = ModuleType("plotly.graph_objects")
+
+    class Figure:  # minimal stand-in for plotly.graph_objects.Figure
+        def __init__(self, *args, **kwargs):
+            pass
+
+    class Scatter:  # minimal stand-in for plotly.graph_objects.Scatter
+        def __init__(self, *args, **kwargs):
+            pass
+
+    go_stub.Figure = Figure
+    go_stub.Scatter = Scatter
+    plotly_stub.graph_objects = go_stub
+    sys.modules["plotly"] = plotly_stub
+    sys.modules["plotly.graph_objects"] = go_stub
+
 import streamlit_app
 
 
