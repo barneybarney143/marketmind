@@ -8,8 +8,9 @@ import sys
 
 import yaml
 
-CONFIG_PATH = Path("tracker_config.yaml")
-DEFAULT_LOG_PATH = Path("logs/prompt_log.md")
+PROJECT_ROOT = Path(__file__).resolve().parent
+CONFIG_PATH = PROJECT_ROOT / "tracker_config.yaml"
+DEFAULT_LOG_PATH = PROJECT_ROOT / "logs" / "prompt_log.md"
 
 
 @dataclass
