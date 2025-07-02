@@ -1,12 +1,13 @@
 name: Cognitive Monitor
 
 on:
-  schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
 
 jobs:
   monitor:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
