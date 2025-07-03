@@ -22,13 +22,27 @@ class IBSStrategy(BaseStrategy):
         close_col = "close"
 
         if high_col not in bar.index:
-            high_candidates = [c for c in bar.index if c.endswith("_high")]
-            low_candidates = [c for c in bar.index if c.endswith("_low")]
-            close_candidates = [c for c in bar.index if c.endswith("_close")]
-            if high_candidates and low_candidates and close_candidates:
-                high_col = high_candidates[0]
-                low_col = low_candidates[0]
-                close_col = close_candidates[0]
+            prefixes = {
+                c.removesuffix("_high")
+                for c in bar.index
+                if c.endswith("_high")
+            }
+            prefixes &= {
+                c.removesuffix("_low")
+                for c in bar.index
+                if c.endswith("_low")
+            }
+            prefixes &= {
+                c.removesuffix("_close")
+                for c in bar.index
+                if c.endswith("_close")
+            }
+
+            if len(prefixes) == 1:
+                prefix = prefixes.pop()
+                high_col = f"{prefix}_high"
+                low_col = f"{prefix}_low"
+                close_col = f"{prefix}_close"
             else:
                 raise KeyError("Missing high/low/close columns")
 
