@@ -21,3 +21,16 @@ def test_ibs_signals() -> None:
     signals = [strategy.next_bar(bar) for bar in bars]
 
     assert signals == ["BUY", "SELL", "HOLD"]
+
+
+def test_ibs_prefixed_columns() -> None:
+    strategy = IBSStrategy()
+    bar = pd.Series(
+        {
+            "spy_open": 1,
+            "spy_high": 10,
+            "spy_low": 0,
+            "spy_close": 9,
+        }
+    )
+    assert strategy.next_bar(bar) == "SELL"
