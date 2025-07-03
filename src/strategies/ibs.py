@@ -17,9 +17,24 @@ class IBSStrategy(BaseStrategy):
 
     def next_bar(self, bar: pd.Series[Any]) -> str:
         """Return trading signal based on IBS."""
-        high = float(bar["high"])
-        low = float(bar["low"])
-        close = float(bar["close"])
+        high_col = "high"
+        low_col = "low"
+        close_col = "close"
+
+        if high_col not in bar.index:
+            high_candidates = [c for c in bar.index if c.endswith("_high")]
+            low_candidates = [c for c in bar.index if c.endswith("_low")]
+            close_candidates = [c for c in bar.index if c.endswith("_close")]
+            if high_candidates and low_candidates and close_candidates:
+                high_col = high_candidates[0]
+                low_col = low_candidates[0]
+                close_col = close_candidates[0]
+            else:
+                raise KeyError("Missing high/low/close columns")
+
+        high = float(bar[high_col])
+        low = float(bar[low_col])
+        close = float(bar[close_col])
 
         if high == low:
             ibs = 0.5
