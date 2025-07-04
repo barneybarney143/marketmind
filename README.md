@@ -4,6 +4,8 @@ This repository is a template for a modern Python project. It includes linting w
 Code is formatted with [Black](https://black.readthedocs.io/) and these checks run automatically via [pre-commit](https://pre-commit.com/).
 
 Use this setup as a starting point for new projects that require a light-weight but strict development workflow.
+See the [Class Intent Reference](docs/class_intent.md) for a summary of all
+classes and their roles in the current code base.
 
 ## Running the Scripts
 
