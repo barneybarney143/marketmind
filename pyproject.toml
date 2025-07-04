@@ -5,13 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "marketmind"
 version = "0.1.0"
-description = "Modern Python project template"
+description = "Hello World example"
 requires-python = ">=3.11"
-dependencies = [
-    "pandas==2.3.0",
-    "yfinance==0.2.64",
-    "pyarrow==20.0.0",
-]
+dependencies = []
 
 [project.optional-dependencies]
 dev = [
@@ -19,16 +15,9 @@ dev = [
     "pytest==8.4.1",
     "pytest-cov==6.2.1",
     "mypy==1.16.1",
-    "pandas-stubs==2.3.0.250703",
     "coverage==7.9.1",
     "black==25.1.0",
     "pre-commit==4.2.0",
-    "grimp==3.9",
-    "types-PyYAML==6.0.12.20250516",
-]
-streamlit = [
-    "streamlit==1.46.1",
-    "plotly==6.2.0",
 ]
 
 [tool.ruff]
@@ -50,9 +39,6 @@ strict = true
 files = ["src"]
 mypy_path = "src"
 
-[[tool.mypy.overrides]]
-module = "yfinance"
-ignore_missing_imports = true
 
 [tool.coverage.run]
 branch = true
