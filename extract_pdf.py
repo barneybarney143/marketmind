@@ -3,7 +3,14 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from pdfextractor import extract_text_from_pdf
+import sys
+from pathlib import Path as _Path
+
+# Allow running without installing the package
+repo_root = _Path(__file__).resolve().parent
+sys.path.insert(0, str(repo_root / "src"))
+
+from pdfextractor import extract_text_from_pdf  # noqa: E402
 
 
 def main() -> None:
