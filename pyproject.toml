@@ -25,10 +25,22 @@ dev = [
     "pre-commit==4.2.0",
     "grimp==3.9",
     "types-PyYAML==6.0.12.20250516",
+    "pdfminer.six==20250506",
+    "pdf2image==1.17.0",
+    "pytesseract==0.3.13",
+    "Pillow==11.3.0",
+    "fpdf2==2.8.3",
 ]
 streamlit = [
     "streamlit==1.46.1",
     "plotly==6.2.0",
+]
+pdf = [
+    "pdfminer.six==20250506",
+    "pdf2image==1.17.0",
+    "pytesseract==0.3.13",
+    "Pillow==11.3.0",
+    "fpdf2==2.8.3",
 ]
 
 [tool.ruff]

@@ -9,10 +9,10 @@ classes and their roles in the current code base.
 
 ## Running the Scripts
 
-Install the dependencies first:
+Install the dependencies first (including PDF/OCR tools):
 
 ```bash
-pip install -e .[dev]
+pip install -e .[dev,pdf]
 ```
 
 Set up the pre-commit hooks after installing the requirements:
@@ -72,6 +72,22 @@ Fetch price history from the command line:
 ```bash
 python fetch.py --tickers "SPY,IDTL" --start 2020-01-01 --end 2020-01-10 \
   --csv-out data
+```
+
+## PDF text extraction
+
+Extract text from a PDF, falling back to OCR for scanned documents:
+
+```bash
+python extract_pdf.py path/to/file.pdf --output out.txt --lang eng
+```
+
+## Glossary translator
+
+Translate phrases using a two-column CSV glossary:
+
+```bash
+python translate.py --glossary glossary.csv --text "hello" --reverse
 ```
 
 ## Checking code quality
